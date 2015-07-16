@@ -22,7 +22,7 @@ namespace  publishers
     ros::Publisher gps_pub, att_quad_pub,
             vel_pub, local_pos_pub,rc_channels_pub;
 
-    ros::Publisher odem_publisher;
+    ros::Publisher odem_publisher, pure_transfer_pub;
 
 
     int init_publishers(ros::NodeHandle &nh)
@@ -33,6 +33,7 @@ namespace  publishers
         publishers::flight_status_pub = nh.advertise<std_msgs::Float32>("flight_status", 10);
         publishers::activation_status_pub = nh.advertise<std_msgs::Float32>("activation_status", 10);
         publishers::test_fre_pub = nh.advertise<std_msgs::Float32>("test_fre", 10);
+        publishers::pure_transfer_pub = nh.advertise<std_msgs::Float32>("pure_transfer", 10);
 
         publishers::acc_pub = nh.advertise<dji_sdk::acc>("acceleration", 10);
 

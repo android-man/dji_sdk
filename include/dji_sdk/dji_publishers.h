@@ -10,7 +10,7 @@
 namespace  publishers
 {
     extern ros::Publisher battery_pub, nav_ctrl_status_pub,
-            flight_status_pub, activation_status_pub, test_fre_pub, acc_pub;
+            flight_status_pub, activation_status_pub, test_fre_pub, acc_pub, pure_transfer_pub;
 
     extern ros::Publisher gps_pub, att_quad_pub,
             vel_pub, local_pos_pub;
