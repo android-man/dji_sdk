@@ -52,7 +52,7 @@ test pure transfer
 */
 void basic_test_pure_transfer(uint8_t* send_data){
     App_Send_Data(0 , 0, MY_ACTIVATION_SET, 0xFE, send_data, sizeof(send_data),NULL,0,1);
-    printf("[pure_transfer],send len %d data %s\n",sizeof(send_data), send_data);
+    printf("[pure_transfer],send len %lu data %s\n", sizeof(send_data), send_data);
 }
 
 
@@ -233,7 +233,7 @@ void ros_ctrl_data_callback(const geometry_msgs::Quaternion::ConstPtr& msg)
     }
     else if (ctrl_mode == 5)
     {
-        send_data.ctrl_flag     = 0x83;     // 
+        send_data.ctrl_flag     = 0x83;     // mode 4
         send_data.roll_or_x     = msg->x;
         send_data.pitch_or_y    = msg->y;
         send_data.thr_z     = msg->z;       //m/s
