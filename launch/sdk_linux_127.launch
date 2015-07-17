@@ -3,11 +3,11 @@
 		<!-- node parameters -->
 		<param name="serial_name" type="string" value="/dev/ttyUSB0"/>
 		<param name="baud_rate" type="int" value="230400"/>
-		<param name="app_id" type="int" value="1007832"/>
+		<param name="app_id" type="int" value="10086"/>
 		<param name="app_api_level" type="int" value="2"/>
 		<param name="app_version" type="int" value="1"/>
-		<param name="app_bundle_id" type="string" value="fuck-dji-sdk"/>
-		<param name="enc_key" type="string" value="8a7820e718ee3bd657b19018a88666b29564b8432f234449ed0fc2bf056aec27"/>
+		<param name="app_bundle_id" type="string" value="122345678901234567890123456789012"/>
+		<param name="enc_key" type="string" value="1234567890123456789012345678901234567890"/>
 		<param name="mavlink_ip" type = "string" value = "127.0.0.1" />
 		<param name="mavlink_port" type = "int" value = "14550" />
 	</node>
