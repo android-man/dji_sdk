@@ -1,5 +1,5 @@
 #include <dji_sdk_node.h>
-#include <dji_sdk/app_act.h>
+#include <dji_sdk/pre_act.h>
 #include <dji_sdk/dji_act_open.h>
 #include <dji_sdk/dji_publishers.h>
 #include <dji_sdk/dji_variable.h>

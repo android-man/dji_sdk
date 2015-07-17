@@ -9,7 +9,6 @@
 #include <dji_sdk/fly_to_local.h>
 #include <dji_sdk/set_velocity.h>
 #include <dji_sdk/motion_controls.h>
-#include <dji_sdk/app_act.h>
 #include <dji_sdk/open_close.h>
 #include <dji_sdk/dji_variable.h>
 

@@ -5,7 +5,6 @@
 #include <thread>
 #include <functional>
 #include <dji_sdk/dji_waypoints.h>
-#include <dji_sdk/app_act.h>
 
 //#define ROS_LOG_DETAILS 0
 
