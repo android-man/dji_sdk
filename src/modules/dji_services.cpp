@@ -7,6 +7,7 @@
 #include <dji_sdk/dji_gimbal.h>
 #include <dji_sdk/set_gimbal_angles.h>
 #include <dji_sdk/fly_to_local.h>
+#include <dji_sdk/fly_to_global.h>
 #include <dji_sdk/set_velocity.h>
 #include <dji_sdk/motion_controls.h>
 #include <dji_sdk/open_close.h>
@@ -175,6 +176,23 @@ namespace service_handles
         return true;
     }
 
+    bool fly_to_global_cb(
+            dji_sdk::fly_to_globalRequest  & request,
+            dji_sdk::fly_to_globalResponse & response
+    )
+
+    {
+//        printf("fly to %f %f %f",
+//               request.target.x,
+//               request.target.y,
+//               request.target.height
+//        );
+
+        motion_controls::fly_to_globalpos(request.target,true);
+        response.success = true;
+        return true;
+    }
+
     bool set_velocity_cb(
             dji_sdk::set_velocityRequest & request,
             dji_sdk::set_velocityResponse & response
@@ -231,7 +249,12 @@ namespace service_handles
                "fly_to_local",
                fly_to_local_cb
         );
-
+        
+        fly_to_local = n.advertiseService(
+               "fly_to_global",
+               fly_to_global_cb
+        );
+        
         set_velocity = n.advertiseService(
                 "set_velocity",
                 set_velocity_cb
