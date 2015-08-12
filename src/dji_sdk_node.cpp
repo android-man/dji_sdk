@@ -5,7 +5,6 @@
 #include <thread>
 #include <functional>
 #include <dji_sdk/dji_waypoints.h>
-#include <dji_sdk/app_act.h>
 
 //#define ROS_LOG_DETAILS 0
 
@@ -19,10 +18,15 @@ int16_t sdk_std_msgs_handler(uint8_t cmd_id, uint8_t *pbuf, uint16_t len, req_id
 
 int16_t nav_force_close_handler(uint8_t cmd_id, uint8_t *pbuf, uint16_t len, req_id_t req_id);
 
+int16_t sdk_pure_transfer_hander(uint8_t cmd_id, uint8_t* pbuf, uint16_t len, req_id_t req_id);
+
+void basic_test_pure_transfer(uint8_t* send_data);
+
 // cmd id table
 cmd_handler_table_t cmd_handler_tab[] = {
         {0x00, sdk_std_msgs_handler},
         {0x01, nav_force_close_handler},
+        {0x02, sdk_pure_transfer_hander},
         {ERR_INDEX, NULL}
 };
 // cmd set table
@@ -31,7 +35,24 @@ set_handler_table_t set_handler_tab[] = {
         {ERR_INDEX, NULL}
 };
 
+int16_t sdk_pure_transfer_hander(uint8_t cmd_id, uint8_t* pbuf, uint16_t len, req_id_t req_id)
+{
+    uint16_t   recv_data;
+    uint8_t data[3] = "";
+    recv_data = *((uint16_t *)pbuf); 
+    printf("[pure_transfer] recv len %d data %s \n", len, pbuf);
+    std_msgs::Float32 msg;
+    msg.data = * pbuf;
+    publishers::pure_transfer_pub.publish(msg); 
+}
 
+/*
+test pure transfer
+*/
+void basic_test_pure_transfer(uint8_t* send_data){
+    App_Send_Data(0 , 0, MY_ACTIVATION_SET, 0xFE, send_data, sizeof(send_data),NULL,0,1);
+    printf("[pure_transfer],send len %lu data %s\n", sizeof(send_data), send_data);
+}
 
 
 //----------------------------------------------------------
@@ -180,6 +201,50 @@ void cmd_callback_fun(uint16_t *ack)
         printf("random_test Cmd result: %s \n", *(result + ack_data));
     }
     cmd_send_flag = 1;
+}
+
+void ros_ctrl_data_callback(const geometry_msgs::Quaternion::ConstPtr& msg)
+{   
+    api_ctrl_without_sensor_data_t send_data = {0};
+    /*
+        send_data.send_yaw = (float)msg->z;
+        send_data.send_pitch = (float)msg->x;
+        send_data.send_roll = (float)msg->y;
+        send_data.send_thr = (float)(msg->w);
+    */
+    printf("mode %f yaw %f pitch %f roll %f vel %f\n", ctrl_mode, (float)msg->z, (float)msg->x, (float)msg->y, (float)(msg->w));
+
+    if(ctrl_mode == 2)
+    {
+        send_data.ctrl_flag     = 0x0a;     // mode 2
+        send_data.roll_or_x     = msg->y;
+        send_data.pitch_or_y    = msg->x;
+        send_data.thr_z     = msg->w;       //m/s
+        send_data.yaw       = msg->z;
+    }
+    else if (ctrl_mode == 4)
+    {
+        send_data.ctrl_flag     = 0x48;     // mode 4
+        send_data.roll_or_x     = msg->y;
+        send_data.pitch_or_y    = msg->x;
+        send_data.thr_z     = msg->w;       //m/s
+        send_data.yaw       = msg->z;
+    }
+    else if (ctrl_mode == 5)
+    {
+        send_data.ctrl_flag     = 0x83;     // mode 4
+        send_data.roll_or_x     = msg->x;
+        send_data.pitch_or_y    = msg->y;
+        send_data.thr_z     = msg->z;       //m/s
+        send_data.yaw       = msg->w;
+    }
+    App_Send_Data(0, 0, MY_CTRL_CMD_SET, API_CTRL_REQUEST, (uint8_t*)&send_data, sizeof(send_data), NULL, 0, 0);
+} 
+
+void ros_ctrl_mode_callback(const std_msgs::Float32::ConstPtr& msg)
+{
+    ctrl_mode = (float)msg->data;
+    printf("mode %f\n",ctrl_mode);
 }
 
 void ros_cmd_data_callback(const std_msgs::Float32::ConstPtr &msg)
@@ -432,16 +497,21 @@ void spin_callback(const ros::TimerEvent &e)
 
 }
 
- ros::Subscriber cmd_data_sub, nav_open_close_sub,
-            activation_sub;
+ ros::Subscriber 
+            cmd_data_sub, 
+            nav_open_close_sub,
+            activation_sub,
+            ctrl_data_sub,
+            ctrl_mode_sub;
 
 
     int init_subscibers(ros::NodeHandle &nh)
     {
-        cmd_data_sub = nh.subscribe("/sdk_request_cmd", 10, ros_cmd_data_callback);
-        activation_sub = nh.subscribe("/sdk_request_activation", 10, ros_activation_callback);
-        nav_open_close_sub = nh.subscribe("/nav_open_close_request", 10, ros_nav_open_close_callback);
-
+        cmd_data_sub        = nh.subscribe("/sdk_request_cmd", 10, ros_cmd_data_callback);
+        activation_sub      = nh.subscribe("/sdk_request_activation", 10, ros_activation_callback);
+        nav_open_close_sub  = nh.subscribe("/nav_open_close_request", 10, ros_nav_open_close_callback);
+        ctrl_data_sub       = nh.subscribe("/sdk_request_ctrl", 10, ros_ctrl_data_callback);
+        ctrl_mode_sub       = nh.subscribe("/sdk_request_ctrl_mode", 10, ros_ctrl_mode_callback);
         return 0;
     }
 //----------------------------------------------------------

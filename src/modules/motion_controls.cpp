@@ -18,7 +18,7 @@ namespace motion_controls
         api_ctrl_without_sensor_data_t send_data = {0};
 
 
-        send_data.ctrl_flag = 0x90; // mode 4
+        send_data.ctrl_flag = 0x90; 
         send_data.roll_or_x = los.x - dji_variable::local_position_ref.x;
         send_data.pitch_or_y = los.y - dji_variable::local_position_ref.y;
         send_data.thr_z = los.height; //m/s
@@ -51,7 +51,7 @@ namespace motion_controls
 
         api_ctrl_without_sensor_data_t send_data = {0};
 
-        send_data.ctrl_flag = 68; // mode 4
+        send_data.ctrl_flag = 68; 
         send_data.roll_or_x = msg.velx;
         send_data.pitch_or_y = msg.vely;
         send_data.thr_z = msg.velz; //m/s

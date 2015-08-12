@@ -1,5 +1,5 @@
 #include <dji_sdk_node.h>
-#include <dji_sdk/app_act.h>
+#include <dji_sdk/pre_act.h>
 #include <dji_sdk/dji_act_open.h>
 #include <dji_sdk/dji_publishers.h>
 #include <dji_sdk/dji_variable.h>
@@ -71,23 +71,32 @@ void nav_open_close_callback(ProHeader *header)
     }
     else {
         msg.data = (float) ack_data;
-        if (msg.data == 2)
+        if (dji_variable::flag_open_or_close)
         {
-            if (dji_variable::flag_open_or_close)
+            if (msg.data == 2)
             {
                 printf("opened!!!\n");
                 dji_variable::opened = true;
+                dji_variable::flag_success = true;
             }
             else 
             {
-                printf("clsoed!!!\n");
-                dji_variable::opened = false;
+                dji_variable::flag_success = false;
+                publishers::nav_ctrl_status_pub.publish(msg);
             }
-            dji_variable::flag_success = true;
         }
         else {
-            dji_variable::flag_success = false;
-            publishers::nav_ctrl_status_pub.publish(msg);
+            if (msg.data == 1)
+            {
+                printf("closed!!!\n");
+                dji_variable::opened = false;
+                dji_variable::flag_success = true;
+            }
+            else 
+            {
+                dji_variable::flag_success = false;
+                publishers::nav_ctrl_status_pub.publish(msg);
+            }
         }
     }
     dji_variable::flag_visit = true;
